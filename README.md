@@ -8,6 +8,12 @@
 ###
 An AI-powered web platform that automates the generation of medical reports from doctor-patient interactions. The system begins by transcribing audio conversations using speech-to-text processing, then preprocesses the transcript. The refined text is passed to the OpenAI API, which generates structured, human-readable medical reports. Built with Django for backend logic and API integration, JavaScript for dynamic frontend interaction, and deployed on Google Cloud for scalability and performance.
 
+## Website records
+
+Home | Dashboard
+:-: | :-:
+<video src='https://github.com/user-attachments/assets/4422c915-46ea-483f-be13-af99862d2db0' width='50%'/> | <video src='https://github.com/user-attachments/assets/2204108c-5b22-4e18-818a-2fa66812b62f' width='50%'/>
+
 ## Features
 
 - AI-Powered Medical Report Generation
@@ -31,8 +37,8 @@ An AI-powered web platform that automates the generation of medical reports from
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/mahmoud0alabsi/ArkenAI-Medical-Report-Generation-Platform.git
-cd ArkenAI-Medical-Report-Generation-Platform
+git clone https://github.com/mahmoud0alabsi/ArkenAI-MedicalReportGenerationPlatform.git
+cd ArkenAI-MedicalReportGenerationPlatform
 ```
 
 2. Create and activate a virtual environment:
