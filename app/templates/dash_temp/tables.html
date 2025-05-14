@@ -1,0 +1,334 @@
+{% extends 'dash_base.html' %}
+
+{% load static %}
+
+{% block title %}{{page_title}}{% endblock title %}
+
+{% block css %}
+<link rel="apple-touch-icon" sizes="76x76" href="{%  static 'img/apple-icon.png'%}">
+<link rel="icon" type="image/png" href="{%  static 'img/favicon.png'%}">
+<!--     Fonts and icons     -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+<!-- Nucleo Icons -->
+<link href="{%  static 'css/nucleo-icons.css'%}" rel="stylesheet" />
+<link href="{%  static 'css/nucleo-svg.css'%}" rel="stylesheet" />
+<!-- Font Awesome Icons -->
+<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+<link href="{%  static 'css/nucleo-svg.css'%}" rel="stylesheet" />
+<!-- CSS Files -->
+<link id="pagestyle" href="{%  static 'css/soft-ui-dashboard.css'%}?v=1.0.7" rel="stylesheet" />
+{% endblock css %}
+
+
+{% block content %}
+
+<div class="container-fluid pb-4">
+
+  <div class="row mb-4">
+    <div class="col-md-5 mt-4">
+      <div class="card">
+        <div class="card-header pb-0 px-3">
+          <h6 class="mb-0">Your reports</h6>
+        </div>
+        <div class="card-body pt-4 p-3">
+          <form class="site-form" method="get" enctype="multipart/form-data">
+            {% csrf_token %}
+            <ul class="list-group list-group-flush" id="list_element" style="max-height: 46.5rem; min-height: 46.5rem; overflow-y: auto; cursor: pointer;">
+            {% for obj in all_history %}
+              <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg myButton"name="{{obj.id}}">
+                <div class="d-flex flex-column">
+                  <h6 class="mb-3 text-lg">{{obj.title}}</h6>
+                  <span class="mb-2 text-sm">Date: <span
+                      class="text-dark font-weight-bold ms-sm-2">{{obj.date_created}}</span></span>
+                </div>
+                <div class="ms-auto text-end">
+                  <a class="btn btn-link text-secondary px-1 mb-0 myButton"  href="javascript:;"
+                    name="{{obj.id}}"><i class="fas fa-eye text-secondary me-2" aria-hidden="true"></i>View</a>
+
+                  <a class="btn btn-link text-info px-1 mb-0 editReportBtn" href="javascript:;" name="{{obj.id}}"
+                    data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="fas fa-pencil-alt text-info me-2"
+                      aria-hidden="true"></i>Edit</a>
+
+                  <a class="btn btn-link text-danger px-1 mb-0 deleteReportBtn" href="javascript:;"
+                  name="{{obj.id}}" data-bs-toggle="modal" data-bs-target="#deleteModal"><i
+                    class="far fa-trash-alt me-2 text-danger"></i>Delete</a>
+  
+
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-md-7 mt-4">
+      <div class="card mb-4">
+        <div class="card-header pb-0 px-3">
+          <!-- <div class="row">
+            <div class="col-md-6">
+              <h6 class="mb-0">Report</h6>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end align-items-center">
+              <i class="far fa-calendar-alt me-2"></i>
+              <small>23 - 30 March 2020</small>
+            </div>
+          </div> -->
+        </div>
+        <div class="card-body pt-4 p-3">
+
+          <div class="row mb-3">
+            <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Audio</h6>
+            <ul class="list-group mb-3">
+              <audio id="audio_place" style="width: 100%; padding-left: 7%; padding-right: 7%;" controls>
+                <source id="audio_source_1" src="" type="audio/ogg">
+                <source id="audio_source_2" src="" type="audio/mpeg">
+                Your browser does not support the audio tag.
+              </audio>
+            </ul>
+          </div>
+
+          <div class="row">
+
+            <div class="col">
+            </div>
+
+            <div class="col">
+            </div>
+
+            <div class="col">
+              <div class="container">
+                <div class="row">
+
+                  <div class="btn-group" role="group" aria-label="Basic outlined example">
+                    <button type="button" class="btn btn-outline-primary" onclick="copyText()"
+                      style="font-size: 11px;padding: 6px;">Copy</button>
+                    <button type="button" class="btn btn-outline-primary" id="increase-font"
+                      style="font-size: 11px;padding: 6px;">A+</button>
+                    <button type="button" class="btn btn-outline-primary" id="decrease-font"
+                      style="font-size: 11px;padding: 6px;">A-</button>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Report</h6>
+          <ul class="list-group">
+            <textarea class="form-control h-100" id="outputTextarea" rows="25" name="outputTextarea"
+              placeholder="Your report will appear here..." style="line-height: unset; color:black"></textarea>
+          </ul>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Edit report Modal -->
+  <form class="site-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Edit report</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- <h4>Are you want to save audio and report ?</h4> -->
+
+            <div class="form-group">
+
+              <div class="row">
+                <div class="container">
+                  <label for="usr">Report Title:</label>
+                  <input type="text" class="form-control" id="modalReportTitle" name="modalReportTitle" required>
+                </div>
+
+              </div>
+
+
+              <div class="row">
+                <div class="container">
+                  <label for="usr">Report :</label>
+                  <textarea class="form-control" id="modalTextarea" rows="20" name="modalTextarea"
+                    placeholder="Your report will appear here..." style="line-height: unset; color:black"></textarea>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- <p>*Hint: you can edit report text before save it</p> -->
+
+            <div id="edit_done_alert" style="display: none">
+              <!-- Computer screen -->
+              <div class="control text-center d-none d-lg-block" style="margin-top: 1rem">
+                <div class="alert alert-success p-2 d-flex align-items-center" role="alert">
+                  <svg class="bi flex-shrink-0 me-2" width="18" height="18" role="img" aria-label="Success:">
+                    <use xlink:href="#check-circle-fill" />
+                  </svg>
+                  <div>
+                    The report has been modified
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ipad (medium screen) screen -->
+              <div class="control text-center p-0 d-none d-md-block d-lg-none" style="margin-top: 1rem">
+                <div class="alert alert-success p-2 d-flex align-items-center" role="alert">
+                  <svg class="bi flex-shrink-0 me-2" width="17" height="17" role="img" aria-label="Success:">
+                    <use xlink:href="#check-circle-fill" />
+                  </svg>
+                  <div style="font-size: 9px;font-weight: 600;">
+                    The report has been modified
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile Screen -->
+              <div class="control text-center p-2 m-0 d-block d-md-none" style="margin-top: 1rem">
+                <div class="alert alert-success d-flex align-items-center" role="alert">
+                  <svg class="bi flex-shrink-0 me-2" width="17" height="17" role="img" aria-label="Success:">
+                    <use xlink:href="#check-circle-fill" />
+                  </svg>
+                  <div style="font-size: 10px;font-weight: 600;">
+                    The report has been modified
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+
+          <div class="modal-footer">
+            <div class="spinner-grow" role="status" id="save_spinner" style="display: none;">
+              <span class="visually-hidden"></span>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-bottom: 0px;"
+              id="close_modal_btn">Close</button>
+            <button type="submit" class="btn btn-primary" name="save_edit_report_btn" id="save_edit_report_btn"
+              style="margin-bottom: 0px;" id_of_select_obj="-1" disabled>Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+
+  <!-- Delete report Modal -->
+  <form class="site-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- Modal -->
+    <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Delete report</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <h4>Are you sure you want to delete the report <span id="titleOfReportSpan" style="color: #EF7A85;"></span>
+              ?</h4>
+
+
+            <div id="delete_done_alert" style="display: none">
+              <!-- Computer screen -->
+              <div class="control text-center d-none d-lg-block" style="margin-top: 1rem">
+                <div class="alert alert-success p-2 d-flex align-items-center" role="alert">
+                  <svg class="bi flex-shrink-0 me-2" width="18" height="18" role="img" aria-label="Success:">
+                    <use xlink:href="#check-circle-fill" />
+                  </svg>
+                  <div>
+                    The report has been deleted successfully
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ipad (medium screen) screen -->
+              <div class="control text-center p-0 d-none d-md-block d-lg-none" style="margin-top: 1rem">
+                <div class="alert alert-success p-2 d-flex align-items-center" role="alert">
+                  <svg class="bi flex-shrink-0 me-2" width="17" height="17" role="img" aria-label="Success:">
+                    <use xlink:href="#check-circle-fill" />
+                  </svg>
+                  <div style="font-size: 9px;font-weight: 600;">
+                    The report has been deleted successfully
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile Screen -->
+              <div class="control text-center p-2 m-0 d-block d-md-none" style="margin-top: 1rem">
+                <div class="alert alert-success d-flex align-items-center" role="alert">
+                  <svg class="bi flex-shrink-0 me-2" width="17" height="17" role="img" aria-label="Success:">
+                    <use xlink:href="#check-circle-fill" />
+                  </svg>
+                  <div style="font-size: 10px;font-weight: 600;">
+                    The report has been deleted successfully
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+
+
+          <div class="modal-footer">
+            <div class="spinner-grow" role="status" id="save_spinner" style="display: none;">
+              <span class="visually-hidden"></span>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-bottom: 0px;"
+              id="close_delete_modal_btn">Close</button>
+            <button type="submit" class="btn btn-primary" name="delete_report_btn" id="delete_report_btn"
+              style="margin-bottom: 0px;" id_of_select_obj="-1" disabled>Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+
+
+  {% endblock content %}
+
+
+  {% block js %}
+
+  <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+
+
+  <!--   Core JS Files   -->
+  <script src="{%  static 'js/core/popper.min.js'%}"></script>
+  <script src="{%  static 'js/core/bootstrap.min.js'%}"></script>
+  <script src="{%  static 'js/plugins/perfect-scrollbar.min.js'%}"></script>
+  <script src="{%  static 'js/plugins/smooth-scrollbar.min.js'%}"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="{%  static 'js/soft-ui-dashboard.min.js'%}"></script>
+
+  <script src="{% static 'assets/js/history.js' %}"></script>
+  {% endblock js %}
