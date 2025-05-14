@@ -2,7 +2,7 @@
 ###
 
 <div align="center">
-<img width="200px" src="https://github.com/mahmoud0alabsi/mahmoud0alabsi/blob/main/assets/logo/arkenai.png?raw=true"/>
+<img style="width:70%" src="https://github.com/mahmoud0alabsi/mahmoud0alabsi/blob/main/assets/logo/arkenai.png?raw=true"/>
 </div>
 
 ###
